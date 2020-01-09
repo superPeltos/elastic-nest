@@ -1,0 +1,56 @@
+version: "3.3"
+services:
+
+  apache:
+    build: ./docker/conf/php
+    ports:
+      - 80
+    volumes:
+      - ./:/var/www/html
+      - ./docker/data/log:/var/log
+    environment:
+      - VIRTUAL_HOST=local.elastic.com
+    networks:
+      - back
+      - reverse-proxy
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+    environment:
+      - "xpack.security.enabled=false"
+    volumes:
+      - ./docker/data/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - back
+    ports:
+      - 9200:9200
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.4.0
+    environment:
+      - "xpack.security.enabled=false"
+    ports:
+      - 5601:5601
+    networks:
+      - back
+
+  ###########################
+  # Setup node container
+  ###########################
+  node:
+    build: ./docker/conf/node/
+    volumes:
+      - ./web/:/home/
+    tty: true
+    ports:
+      - 3000:3000
+    networks:
+      - back
+
+networks:
+  reverse-proxy:
+    external:
+      name: reverse-proxy
+  back:
+    driver: bridge
