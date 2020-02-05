@@ -1,27 +1,23 @@
-import { Controller, Get, HttpService } from '@nestjs/common';
+import { Body, Controller, Get, HttpService, Query, Req } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { AxiosResponse } from "axios";
+import { EcommerceService } from './ecommerce.service';
+
 
 @Controller('ecommerce')
 export class EcommerceController {
   private ecommerceArray = [];
-  private wording = ""
-  constructor(private readonly httpService: HttpService) {}
+  private wording = "";
+  constructor(private readonly httpService: HttpService,private readonly ecommerceService: EcommerceService) {}
 
   @Get()
-  findAll(): any {
-    let search = JSON.parse('{"query": {"match": {"name": "pasta"}}}');
-    this.httpService.get('http://elasticsearch:9200/ecommerce/product/_search',{ data : search}).subscribe((data ) => {
-      this.wording = "";
-      this.ecommerceArray = data.data.hits.hits;
-      this.ecommerceArray.forEach((data) => {
-        this.wording += data._source.name + '<br>';
-      });
-
-    });
-    return this.wording;
-
-
+  async findAll(@Body() body: any){
+    console.log(body);
+    return this.ecommerceService.findAll(body);
   }
+
+
+
+
 }
 
