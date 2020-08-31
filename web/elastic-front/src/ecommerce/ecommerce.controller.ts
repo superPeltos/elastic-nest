@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpService, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpService, Param, Post, Query, Req } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { AxiosResponse } from "axios";
 import { EcommerceService } from './ecommerce.service';
@@ -12,12 +12,13 @@ export class EcommerceController {
 
   @Get()
   async findAll(@Body() body: any){
-    console.log(body);
     return this.ecommerceService.findAll(body);
   }
 
-
-
+  @Get(':id')
+  async findOne(@Param() param:any){
+    return this.ecommerceService.findOne(param);
+  }
 
 }
 
